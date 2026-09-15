@@ -1,6 +1,6 @@
 import { Application } from "pixi.js";
 import { App } from "./app.js";
-import { loadGameAssets, ASSETS, url } from "./assets.js";
+import { loadGameAssets, warmGameAssets } from "./assets.js";
 import { initHelp } from "./help.js";
 import { shouldAutoContinue } from "./bonusFlow.js";
 
@@ -18,6 +18,12 @@ const BET_STEPS = [0.2, 0.4, 0.6, 0.8, 1, 1.5, 2, 2.5, 3, 4, 5, 7.5, 10, 15, 20,
 function startBackgroundVideo(id) {
   const v = document.getElementById(id);
   if (!v) return;
+  // The Bonus film has no source until it is actually needed. This avoids a
+  // multi-megabyte invisible download competing with the playable first paint.
+  if (!v.getAttribute("src") && v.dataset.src) {
+    v.src = v.dataset.src;
+    v.load();
+  }
   v.muted = true; // required for autoplay
   const kick = () => v.play().catch(() => {});
   kick();
@@ -57,8 +63,6 @@ function positionBackgroundVideo() {
 async function boot() {
   positionBackgroundVideo();
   window.addEventListener("resize", positionBackgroundVideo);
-  startBackgroundVideo("bg-video");
-  startBackgroundVideo("bg-video-bonus"); // preloaded + playing (hidden) before any Bonus ever triggers
   // Fixed square canvas — CSS scales it into the board frame; cells stay square and
   // 6×6 / 7×7 / 8×8 never move the shell.
   const pixi = new Application();
@@ -71,7 +75,7 @@ async function boot() {
     autoDensity: true,
   });
 
-  await loadGameAssets(); // one decode per texture, cached by Pixi Assets
+  await loadGameAssets(); // bounded, failure-tolerant essential first paint
   $("pixi-holder").appendChild(pixi.canvas);
 
   const app = new App(pixi);
@@ -177,6 +181,18 @@ async function boot() {
   const loading = $("loading");
   loading.classList.add("done");
   setTimeout(() => loading.remove(), 500);
+
+  // Start nonessential media only once interaction is possible. The background
+  // poster remains visible until the first decoded frame, so this never flashes.
+  const defer = window.requestIdleCallback || ((fn) => setTimeout(fn, 250));
+  defer(() => {
+    startBackgroundVideo("bg-video");
+    warmGameAssets().catch((error) => console.warn("Deferred asset warm-up failed", error));
+  });
+  const background = $("bg");
+  new MutationObserver(() => {
+    if (background.dataset.phase !== "base") startBackgroundVideo("bg-video-bonus");
+  }).observe(background, { attributes: true, attributeFilter: ["data-phase"] });
 
   // ---------- bet ----------
   let betIdx = BET_STEPS.indexOf(app.bet);
@@ -331,4 +347,15 @@ async function boot() {
   app.hud.debug("Ready. SPIN (or Space).");
 }
 
-boot();
+boot().catch((error) => {
+  // Never leave visitors staring at an infinite loading screen if WebGL, a CDN
+  // asset, or a browser extension prevents startup. Keep the page recoverable
+  // and expose a useful action instead of silently swallowing the failure.
+  console.error("Forge boot failed", error);
+  const loading = $("loading");
+  if (loading) {
+    loading.textContent = "STARTUP FAILED — TAP TO RETRY";
+    loading.classList.add("failed");
+    loading.addEventListener("click", () => window.location.reload(), { once: true });
+  }
+});

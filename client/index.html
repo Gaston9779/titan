@@ -15,15 +15,14 @@
         loop
         playsinline
         disablepictureinpicture
-        preload="auto"
+        preload="metadata"
         poster="/assets/background/background_base.png"
         aria-hidden="true"
       >
         <source src="/assets/background/background_base_loop.mp4" type="video/mp4" />
       </video>
-      <!-- Bonus background — same layer architecture as Base, always playing
-           (hidden via opacity) so the Base<->Bonus crossfade never shows a
-           black/loading frame. Never recreated; reused across every Bonus. -->
+      <!-- Bonus video is activated only when a Bonus starts. It must not spend
+           bandwidth during the playable first paint. -->
       <video
         id="bg-video-bonus"
         autoplay
@@ -31,10 +30,10 @@
         loop
         playsinline
         disablepictureinpicture
-        preload="auto"
+        preload="none"
         aria-hidden="true"
+        data-src="/assets/background/background_bonus.mp4"
       >
-        <source src="/assets/background/background_bonus.mp4" type="video/mp4" />
       </video>
     </div>
     <div id="bg-fx" data-phase="base">

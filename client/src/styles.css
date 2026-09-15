@@ -1046,6 +1046,14 @@ button:disabled { cursor: default; }
   transition: opacity .4s;
 }
 #loading.done { opacity: 0; pointer-events: none; }
+#loading.failed {
+  cursor: pointer;
+  color: #ffd98a;
+  font-size: clamp(13px, 3vw, 22px);
+  letter-spacing: 2px;
+  text-align: center;
+  padding: 24px;
+}
 
 .hidden { display: none; }
 

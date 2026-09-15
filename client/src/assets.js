@@ -4,7 +4,7 @@
 // Nothing else in the client hardcodes an asset path.
 // Also the single home for per-asset display tuning (fit / scale / anchor).
 // ============================================================================
-import { Assets } from "pixi.js";
+import { Assets, Texture } from "pixi.js";
 
 const BASE = "assets"; // resolved relative to the app's base URL (see resolve())
 
@@ -118,17 +118,48 @@ const pixiEntries = () => {
   return out;
 };
 
-export async function loadGameAssets() {
-  if (CACHE) return CACHE;
-  const entries = pixiEntries();
+// The board cannot be shown without these textures. Effects and power icons are
+// deliberately not part of the first paint: waiting for purely decorative art
+// used to keep the full-page FORGING overlay up on slow/mobile connections.
+const essentialEntries = () =>
+  pixiEntries().filter(([id]) => id.startsWith("board:") || id.startsWith("sym:") || id.startsWith("shard:"));
+const deferredEntries = () => pixiEntries().filter(([id]) => id.startsWith("power:") || id.startsWith("fx:"));
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function loadEntries(entries, { deadline = 5000 } = {}) {
   const srcs = [...new Set(entries.map(([, s]) => url(s)))];
-  await Assets.load(srcs); // Pixi caches; no duplicate decode
-  CACHE = {};
-  for (const [id, s] of entries) {
-    const texture = Assets.get(url(s));
+  // Load independently. A single corrupt/missing CDN object must never turn
+  // into a permanently blocked game shell.
+  const jobs = srcs.map((src) => Assets.load(src).catch((error) => {
+    console.warn("Asset unavailable:", src, error);
+    return null;
+  }));
+  const complete = Promise.allSettled(jobs);
+  const outcome = await Promise.race([complete.then(() => "complete"), sleep(deadline).then(() => "timeout")]);
+  if (outcome === "timeout") console.warn(`Asset warm-up exceeded ${deadline}ms; continuing with available textures.`);
+
+  for (const [id, source] of entries) {
+    // WHITE is an intentional safe visual fallback. It lets the game become
+    // interactive even during a transient asset/CDN failure; successful late
+    // loads are still cached by Pixi for the next board rebuild.
+    const texture = Assets.get(url(source)) || Texture.WHITE;
     const trim = id.startsWith("sym:") || id.startsWith("shard:") ? measureTrim(texture) : fullBounds(texture);
     CACHE[id] = { texture, w: texWidth(texture), h: texHeight(texture), ...trim };
   }
+}
+
+export async function loadGameAssets() {
+  if (CACHE) return CACHE;
+  CACHE = {};
+  await loadEntries(essentialEntries());
+  return CACHE;
+}
+
+// Best-effort warm-up after the game is already usable. Nothing awaits this.
+export async function warmGameAssets() {
+  if (!CACHE) await loadGameAssets();
+  await loadEntries(deferredEntries(), { deadline: 12000 });
   return CACHE;
 }
 

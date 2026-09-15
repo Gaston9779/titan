@@ -1,0 +1,15 @@
+{
+  "name": "forge-the-last-titan-math",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "FORGE: THE LAST TITAN — headless deterministic math engine (Phase 2, S0->S2 slice)",
+  "scripts": {
+    "test": "node --test",
+    "sim": "node sim/run.js",
+    "verify": "node sim/verify.js",
+    "dev": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "preview": "npm --prefix client run preview"
+  }
+}

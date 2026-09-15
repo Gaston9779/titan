@@ -1,0 +1,18 @@
+{
+  "name": "forge-the-last-titan-client",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "FORGE: THE LAST TITAN — PixiJS playable prototype (presentation only; math from ../engine).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 5174"
+  },
+  "dependencies": {
+    "pixi.js": "^8.6.6"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  }
+}

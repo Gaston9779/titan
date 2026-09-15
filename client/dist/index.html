@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FORGE: THE LAST TITAN</title>
+    <script type="module" crossorigin src="/assets/index-Brp9u-9M.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CISorF_r.css">
+  </head>
+  <body>
+    <div id="bg" data-phase="base">
+      <video
+        id="bg-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        disablepictureinpicture
+        preload="auto"
+        poster="/assets/background/background_base.png"
+        aria-hidden="true"
+      >
+        <source src="/assets/background/background_base_loop.mp4" type="video/mp4" />
+      </video>
+      <!-- Bonus background — same layer architecture as Base, always playing
+           (hidden via opacity) so the Base<->Bonus crossfade never shows a
+           black/loading frame. Never recreated; reused across every Bonus. -->
+      <video
+        id="bg-video-bonus"
+        autoplay
+        muted
+        loop
+        playsinline
+        disablepictureinpicture
+        preload="auto"
+        aria-hidden="true"
+      >
+        <source src="/assets/background/background_bonus.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div id="bg-fx" data-phase="base">
+      <span class="ember"></span><span class="ember"></span><span class="ember"></span>
+      <span class="ember"></span><span class="ember"></span><span class="ember"></span>
+      <span class="ember"></span><span class="ember"></span>
+    </div>
+
+    <div id="app" data-phase="base">
+      <!-- ===== top HUD ===== -->
+      <header id="hud-top">
+        <div class="wallet">
+          <div class="w-item"><i>BALANCE</i><b id="balance">1000.00</b></div>
+          <div class="w-item w-win"><i>WIN</i><b id="win">0.00</b></div>
+          <button id="debug-toggle" class="btn-round dev" title="Menu"><img src="/assets/controls/menu.png" alt="Menu" /></button>
+        </div>
+      </header>
+
+      <!-- ===== game stage ===== -->
+      <!-- ONE gameplay cluster:  LEFT HUD + BOARD + RIGHT HUD.
+           The whole cluster is centred in the viewport (see layout() in main.js);
+           the side HUDs are real flow siblings of the board, never free-floating. -->
+      <main id="stage">
+        <div id="gameplay">
+          <!-- ===== LEFT HUD — ONE Pressure/Heat forge device + Forge Core tracker ===== -->
+          <aside class="hud-col hud-left">
+            <!-- Pressure orb and Heat column read as a SINGLE vertical device:
+                 orb tip almost meets the meter head. Same local centre X. -->
+            <div id="ph-device">
+              <img id="pressure-orb" class="pressure-orb" src="/assets/hud/pressure_cold.png" alt="Pressure" />
+              <!-- ONE reusable vertical meter: HEAT in base game, MOLTEN CHARGE in bonus -->
+              <div class="vmeter" id="vmeter" data-level="low">
+                <div class="vmeter-track">
+                  <div class="vmeter-fill" id="vmeter-fill">
+                    <div class="vmeter-fill-crest"></div>
+                    <div class="vmeter-fill-lum"></div>
+                  </div>
+                  <div class="vmeter-bubbles">
+                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+                <div class="vmeter-frame"></div>
+                <div class="vmeter-head"></div>
+                <div class="vmeter-orb"></div>
+                <span class="vmeter-cap" id="vmeter-cap" hidden>HEAT</span>
+                <span class="vmeter-val" id="vmeter-val">0.0</span>
+              </div>
+            </div>
+            <div class="panel cores base-feat" id="cores-panel" data-cores="0">
+              <span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span>
+            </div>
+          </aside>
+
+          <!-- ===== CENTER — the board is the primary anchor ===== -->
+          <div id="board-well">
+            <div id="board-frame">
+              <!-- grid / cells / symbols / win FX render in the pixi canvas … -->
+              <div id="pixi-holder"></div>
+              <!-- … the approved machine casing (nine-slice border-image) sits OVER the
+                   grid perimeter — corners + rails from one border-image; the top/bottom
+                   centre gems are re-crowned unstretched by the two ornament crops … -->
+              <div id="board-outer-frame" aria-hidden="true"></div>
+              <i class="frame-ornament top" aria-hidden="true"></i>
+              <i class="frame-ornament bottom" aria-hidden="true"></i>
+              <!-- … and round messaging sits above everything -->
+              <div id="win-pill" class="hidden"><i>WIN</i><b id="win-pill-val">0.00</b></div>
+              <div id="banner" class="banner hidden"></div>
+            </div>
+          </div>
+
+          <!-- ===== RIGHT HUD — Shards multiplier ladder ===== -->
+          <aside class="hud-col hud-right">
+            <div class="panel fs bonus-feat" id="fs-panel">
+              <i>FREE SPINS</i><b id="fscount">–</b>
+            </div>
+            <!-- SHARDS / multiplier tracker — vertical ladder, 2x (top) → 64x (bottom).
+                 shards_panel.png is rotated 90°; each shard is pinned to its own
+                 measured socket centre and counter-rotated back to upright. -->
+            <div id="shards-tracker" class="shards-tracker">
+              <div class="st-rot">
+                <div class="st-frame"></div>
+                <div class="st-slots" id="shard-slots">
+                  <span class="shard-slot" data-mult="2"><i class="shard-img"></i></span>
+                  <span class="shard-slot" data-mult="4"><i class="shard-img"></i></span>
+                  <span class="shard-slot" data-mult="8"><i class="shard-img"></i></span>
+                  <span class="shard-slot" data-mult="16"><i class="shard-img"></i></span>
+                  <span class="shard-slot" data-mult="32"><i class="shard-img"></i></span>
+                  <span class="shard-slot" data-mult="64"><i class="shard-img"></i></span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      <!-- ===== ControlsBar — ONE forged bar, centred on the board centreline ===== -->
+      <footer id="controls">
+        <!-- controls_bar_frame.png IS the bar; controls live in its safe dark interior -->
+        <div class="controls-bar" id="controls-bar">
+          <div class="cbar-inner">
+            <div class="ctl-row">
+              <div class="ctl-bet">
+                <button id="bet-dec" class="btn-round sm" aria-label="Decrease bet"><img src="/assets/controls/minus.png" alt="−" /></button>
+                <div class="bet-value"><b id="bet-val">1.00</b></div>
+                <button id="bet-inc" class="btn-round sm" aria-label="Increase bet"><img src="/assets/controls/plus.png" alt="+" /></button>
+              </div>
+              <button id="spin" class="btn-spin" aria-label="Spin"><img src="/assets/controls/spin.png" alt="" /></button>
+              <div class="ctl-grp">
+                <button id="turbo" class="btn-round" title="Turbo"><img src="/assets/controls/turbo.png" alt="Turbo" /></button>
+                <button id="auto" class="btn-round" title="Autoplay"><img src="/assets/controls/autoplay.png" alt="Autoplay" /></button>
+              </div>
+              <div class="ctl-grp ctl-util">
+                <button id="sound" class="btn-round sm" title="Sound"><img src="/assets/controls/sound.png" alt="Sound" /></button>
+                <button id="fullscreen" class="btn-round sm" title="Fullscreen"><img src="/assets/controls/fullscreen.png" alt="Fullscreen" /></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <!-- subtle branding, bottom-left -->
+      <img id="logo" class="logo" src="/assets/branding/logo.png" alt="FORGE: THE LAST TITAN" />
+
+      <!-- Buy Bonus — permanent Base-Game control, bottom-right, separate from
+           the ControlsBar. Final approved artwork (bakes in "BUY BONUS" /
+           "45× BET" already) — no extra text drawn over it; the confirmation
+           modal carries the actual monetary cost breakdown. -->
+      <button id="buy-bonus" class="buy-bonus-fab base-feat" title="Buy Bonus">
+        <img src="/assets/controls/buy_bonus.png" alt="Buy Bonus — 45× Bet" />
+      </button>
+    </div>
+
+    <!-- ===== developer drawer ===== -->
+    <aside id="debug" class="drawer hidden">
+      <div class="drawer-head"><span>DEVELOPER</span><button id="debug-close" class="x">✕</button></div>
+      <div class="drawer-body">
+        <div class="dbg-row">
+          <label>Seed <input id="dbg-seed" value="20260902" /></label>
+          <label>Round <input id="dbg-round" type="number" value="0" min="0" /></label>
+        </div>
+        <div class="dbg-row">
+          <button id="dbg-spin">Spin seed/round</button>
+          <button id="dbg-replay">Replay (no advance)</button>
+          <button id="dbg-skip" title="Skip the running presentation (debug only)">Skip anim</button>
+        </div>
+        <div class="dbg-row">
+          <span class="dbg-cap">Presets</span>
+          <button class="preset" data-seed="20260902" data-round="7">Normal</button>
+          <button class="preset" data-seed="20260902" data-round="19">Cascade + Power</button>
+          <button class="preset" data-seed="20260902" data-round="749">Bonus 7×7</button>
+          <button class="preset" data-seed="20260902" data-round="2995">Awakened 8×8</button>
+        </div>
+        <div class="dbg-row">
+          <span class="dbg-cap">Speed</span>
+          <button data-speed="1" class="spd active">1×</button>
+          <button data-speed="2" class="spd">2×</button>
+          <button data-speed="5" class="spd">5×</button>
+          <button data-speed="0" class="spd">Instant</button>
+          <label class="chk"><input type="checkbox" id="dbg-info" checked /> engine info</label>
+        </div>
+        <pre id="dbg-out">engine result appears here…</pre>
+      </div>
+    </aside>
+
+    <!-- ===== help / paytable menu ===== -->
+    <div id="help-overlay" class="hidden" role="dialog" aria-modal="true" aria-label="Game info" aria-hidden="true">
+      <div id="help-backdrop"></div>
+      <div id="help-panel">
+        <div class="help-head">
+          <div class="help-tabs">
+            <button class="help-tab active" data-tab="how">HOW TO PLAY</button>
+            <button class="help-tab" data-tab="pays">SYMBOLS &amp; PAYS</button>
+            <button class="help-tab" data-tab="features">FEATURES</button>
+          </div>
+          <button id="help-close" class="x" aria-label="Close">✕</button>
+        </div>
+        <div class="help-body">
+          <div class="help-pane active" id="help-pane-how"></div>
+          <div class="help-pane" id="help-pane-pays"></div>
+          <div class="help-pane" id="help-pane-features"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Buy Bonus confirmation ===== -->
+    <div id="buybonus-modal" class="hidden" role="dialog" aria-modal="true" aria-label="Buy Bonus" aria-hidden="true">
+      <div id="buybonus-backdrop"></div>
+      <div id="buybonus-panel">
+        <h2>BUY BONUS</h2>
+        <p class="bb-cost-line">COST <b id="bb-cost-x">45×</b> BET</p>
+        <div class="bb-rows">
+          <div class="bb-row"><span>Current Bet</span><b id="bb-bet">1.00</b></div>
+          <div class="bb-row"><span>Total Cost</span><b id="bb-total">45.00</b></div>
+        </div>
+        <div class="bb-actions">
+          <button id="bb-cancel" class="bb-btn cancel">CANCEL</button>
+          <button id="bb-buy" class="bb-btn buy">BUY</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loading">FORGING…</div>
+  </body>
+</html>

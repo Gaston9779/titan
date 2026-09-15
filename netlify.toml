@@ -1,7 +1,6 @@
 [build]
-  command = "npm run build"
+  command = "npm --prefix client install --no-save --force @rollup/rollup-linux-x64-gnu@4.63.3 && npm run build"
   publish = "client/dist"
 
 [build.environment]
   NODE_VERSION = "22"
-  NPM_FLAGS = "--include=optional"

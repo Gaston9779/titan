@@ -10,17 +10,15 @@
     <div id="bg" data-phase="base">
       <video
         id="bg-video"
-        autoplay
         muted
         loop
         playsinline
         disablepictureinpicture
-        preload="metadata"
-        poster="/assets/background/background_base.png"
+        preload="none"
+        poster="/assets/background/background_base.webp"
         aria-hidden="true"
-      >
-        <source src="/assets/background/background_base_loop.mp4" type="video/mp4" />
-      </video>
+        data-src="/assets/background/background_base_loop.mp4"
+      ></video>
       <!-- Bonus video is activated only when a Bonus starts. It must not spend
            bandwidth during the playable first paint. -->
       <video
@@ -48,7 +46,7 @@
         <div class="wallet">
           <div class="w-item"><i>BALANCE</i><b id="balance">1000.00</b></div>
           <div class="w-item w-win"><i>WIN</i><b id="win">0.00</b></div>
-          <button id="debug-toggle" class="btn-round dev" title="Menu"><img src="/assets/controls/menu.png" alt="Menu" /></button>
+          <button id="debug-toggle" class="btn-round dev" title="Menu"><img src="/assets/controls/menu.webp" alt="Menu" /></button>
         </div>
       </header>
 
@@ -63,7 +61,7 @@
             <!-- Pressure orb and Heat column read as a SINGLE vertical device:
                  orb tip almost meets the meter head. Same local centre X. -->
             <div id="ph-device">
-              <img id="pressure-orb" class="pressure-orb" src="/assets/hud/pressure_cold.png" alt="Pressure" />
+              <img id="pressure-orb" class="pressure-orb" src="/assets/hud/pressure_cold.webp" alt="Pressure" />
               <!-- ONE reusable vertical meter: HEAT in base game, MOLTEN CHARGE in bonus -->
               <div class="vmeter" id="vmeter" data-level="low">
                 <div class="vmeter-track">
@@ -136,32 +134,32 @@
           <div class="cbar-inner">
             <div class="ctl-row">
               <div class="ctl-bet">
-                <button id="bet-dec" class="btn-round sm" aria-label="Decrease bet"><img src="/assets/controls/minus.png" alt="−" /></button>
+                <button id="bet-dec" class="btn-round sm" aria-label="Decrease bet"><img src="/assets/controls/minus.webp" alt="−" /></button>
                 <div class="bet-value"><b id="bet-val">1.00</b></div>
-                <button id="bet-inc" class="btn-round sm" aria-label="Increase bet"><img src="/assets/controls/plus.png" alt="+" /></button>
+                <button id="bet-inc" class="btn-round sm" aria-label="Increase bet"><img src="/assets/controls/plus.webp" alt="+" /></button>
               </div>
-              <button id="spin" class="btn-spin" aria-label="Spin"><img src="/assets/controls/spin.png" alt="" /></button>
+              <button id="spin" class="btn-spin" aria-label="Spin"><img src="/assets/controls/spin.webp" alt="" /></button>
               <div class="ctl-grp">
-                <button id="turbo" class="btn-round" title="Turbo"><img src="/assets/controls/turbo.png" alt="Turbo" /></button>
-                <button id="auto" class="btn-round" title="Autoplay"><img src="/assets/controls/autoplay.png" alt="Autoplay" /></button>
+                <button id="turbo" class="btn-round" title="Turbo"><img src="/assets/controls/turbo.webp" alt="Turbo" /></button>
+                <button id="auto" class="btn-round" title="Autoplay"><img src="/assets/controls/autoplay.webp" alt="Autoplay" /></button>
               </div>
               <div class="ctl-grp ctl-util">
-                <button id="sound" class="btn-round sm" title="Sound"><img src="/assets/controls/sound.png" alt="Sound" /></button>
-                <button id="fullscreen" class="btn-round sm" title="Fullscreen"><img src="/assets/controls/fullscreen.png" alt="Fullscreen" /></button>
+                <button id="sound" class="btn-round sm" title="Sound"><img src="/assets/controls/sound.webp" alt="Sound" /></button>
+                <button id="fullscreen" class="btn-round sm" title="Fullscreen"><img src="/assets/controls/fullscreen.webp" alt="Fullscreen" /></button>
               </div>
             </div>
           </div>
         </div>
       </footer>
       <!-- subtle branding, bottom-left -->
-      <img id="logo" class="logo" src="/assets/branding/logo.png" alt="FORGE: THE LAST TITAN" />
+      <img id="logo" class="logo" src="/assets/branding/logo.webp" alt="FORGE: THE LAST TITAN" />
 
       <!-- Buy Bonus — permanent Base-Game control, bottom-right, separate from
            the ControlsBar. Final approved artwork (bakes in "BUY BONUS" /
            "45× BET" already) — no extra text drawn over it; the confirmation
            modal carries the actual monetary cost breakdown. -->
       <button id="buy-bonus" class="buy-bonus-fab base-feat" title="Buy Bonus">
-        <img src="/assets/controls/buy_bonus.png" alt="Buy Bonus — 45× Bet" />
+        <img src="/assets/controls/buy_bonus.webp" alt="Buy Bonus — 45× Bet" />
       </button>
     </div>
 

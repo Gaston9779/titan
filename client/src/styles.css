@@ -81,7 +81,7 @@ button:disabled { cursor: default; }
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background-image: url("/assets/background/background_base.png");
+  background-image: url("/assets/background/background_base.webp");
   background-repeat: no-repeat;
   background-color: #1a1712;
   background-size: var(--bg-poster-size, 118%) auto;
@@ -267,7 +267,7 @@ button:disabled { cursor: default; }
 .vmeter-frame {
   position: absolute;
   inset: 0;
-  background-image: url("/assets/hud/meter_vertical_frame.png");
+  background-image: url("/assets/hud/meter_vertical_frame.webp");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   pointer-events: none;
@@ -286,7 +286,7 @@ button:disabled { cursor: default; }
 .vmeter-fill {
   position: absolute;
   inset: 0;
-  background-image: url("/assets/hud/meter_vertical_fill.png");
+  background-image: url("/assets/hud/meter_vertical_fill.webp");
   background-size: 100% 150%;
   background-repeat: repeat-y;
   background-position: 50% 0%;
@@ -609,14 +609,14 @@ button:disabled { cursor: default; }
 }
 .panel.cores {
   aspect-ratio: 445 / 236;
-  background-image: url("/assets/hud/forge_cores_panel.png");
+  background-image: url("/assets/hud/forge_cores_panel.webp");
   width: 100%;
   max-width: 200px;
   flex: 0 0 auto;
 }
 .panel.fs {
   aspect-ratio: 445 / 200;
-  background-image: url("/assets/hud/forge_cores_panel.png");
+  background-image: url("/assets/hud/forge_cores_panel.webp");
   flex-direction: column;
   width: min(140px, 78%);
 }
@@ -641,7 +641,7 @@ button:disabled { cursor: default; }
 .panel.cores .ring {
   position: absolute;
   /* left/top are set per-slot from CORE_SLOTS in hud.js (explicit socket centres
-     of forge_cores_panel.png) — never generic equal spacing. */
+     of forge_cores_panel.webp) — never generic equal spacing. */
   left: 50%; top: 53.5%;
   width: 12.5%; aspect-ratio: 1; /* nests INSIDE the ~15%-wide socket */
   transform: translate(-50%, -50%);
@@ -712,12 +712,12 @@ button:disabled { cursor: default; }
 .st-frame {
   position: absolute;
   inset: 0;
-  background-image: url("/assets/hud/shards_panel.png");
+  background-image: url("/assets/hud/shards_panel.webp");
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 /* explicit socket centres, as a fraction of the 564-wide art (measured off the
-   6 octagons of shards_panel.png). Vertical centre of every socket is 47%. */
+   6 octagons of shards_panel.webp). Vertical centre of every socket is 47%. */
 .st-slots { position: absolute; inset: 0; }
 .shard-slot {
   position: absolute;
@@ -834,7 +834,7 @@ button:disabled { cursor: default; }
   inset: 0;
   border-style: solid;
   border-width: var(--fb-t, 30px) var(--fb-r, 24px) var(--fb-b, 41px) var(--fb-l, 24px);
-  border-image-source: url("/assets/board/board_outer_frame.png");
+  border-image-source: url("/assets/board/board_outer_frame.webp");
   border-image-slice: 144 118 200 116;   /* native px: top right bottom left */
   border-image-width: 1;
   border-image-repeat: stretch;
@@ -850,7 +850,7 @@ button:disabled { cursor: default; }
   width: calc(340px * var(--frame-s, 0.2));
   height: calc(200px * var(--frame-s, 0.2));
   transform: translateX(-50%);
-  background-image: url("/assets/board/board_outer_frame.png");
+  background-image: url("/assets/board/board_outer_frame.webp");
   background-repeat: no-repeat;
   background-size: calc(1254px * var(--frame-s, 0.2)) calc(1254px * var(--frame-s, 0.2));
   pointer-events: none;
@@ -924,7 +924,7 @@ button:disabled { cursor: default; }
   position: relative;
   height: var(--cbar-h, 210px);
   aspect-ratio: 2170 / 725;          /* uniform scale — never squashed */
-  background: url("/assets/controls/controls_bar_frame.png") center center / 100% 100% no-repeat;
+  background: url("/assets/controls/controls_bar_frame.webp") center center / 100% 100% no-repeat;
   /* the PNG's transparent margin is bigger at the bottom — nudge up so the
      opaque bar is optically centred in #controls and clears the viewport edge */
   transform: translateY(calc(var(--cbar-h, 210px) * -0.025));
@@ -961,7 +961,7 @@ button:disabled { cursor: default; }
   position: relative;
   height: calc(var(--ctl) * 0.64);
   aspect-ratio: 485 / 279;           /* native bet.png proportions — never squashed */
-  background-image: url("/assets/controls/bet.png");
+  background-image: url("/assets/controls/bet.webp");
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }

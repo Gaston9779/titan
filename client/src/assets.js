@@ -11,82 +11,82 @@ const BASE = "assets"; // resolved relative to the app's base URL (see resolve()
 // --- semantic id -> file (actual filenames present in the pack) ---
 export const ASSETS = {
   background: {
-    BASE: `${BASE}/background/background_base.png`,
+    BASE: `${BASE}/background/background_base.webp`,
   },
   branding: {
-    LOGO: `${BASE}/branding/logo.png`,
+    LOGO: `${BASE}/branding/logo.webp`,
   },
   board: {
     // reusable cell frames — the board is ALWAYS generated from these, never baked
-    BASE: `${BASE}/board/cell_base.png`,
-    MOLTEN: `${BASE}/board/cell_molten.png`,
-    LOCKED: `${BASE}/board/cell_locked.png`,
-    HIGHLIGHT: `${BASE}/board/cell_highlight.png`,
+    BASE: `${BASE}/board/cell_base.webp`,
+    MOLTEN: `${BASE}/board/cell_molten.webp`,
+    LOCKED: `${BASE}/board/cell_locked.webp`,
+    HIGHLIGHT: `${BASE}/board/cell_highlight.webp`,
     // approved outermost machine casing — DOM overlay above the whole board
     // (transparent centre; 1254×1254; inner opening ≈ 116..1136 × 144..1054)
-    OUTER_FRAME: `${BASE}/board/board_outer_frame.png`,
+    OUTER_FRAME: `${BASE}/board/board_outer_frame.webp`,
   },
   symbols: {
-    L1: `${BASE}/symbols/low_1.png`,
-    L2: `${BASE}/symbols/low_2.png`,
-    L3: `${BASE}/symbols/low_3.png`,
-    L4: `${BASE}/symbols/low_4.png`,
-    H1: `${BASE}/symbols/high_1.png`,
-    H2: `${BASE}/symbols/high_2.png`,
-    H3: `${BASE}/symbols/high_3.png`,
-    H4: `${BASE}/symbols/high_4.png`,
-    WILD: `${BASE}/symbols/wild.png`,
-    CORE: `${BASE}/symbols/forge_core.png`,
+    L1: `${BASE}/symbols/low_1.webp`,
+    L2: `${BASE}/symbols/low_2.webp`,
+    L3: `${BASE}/symbols/low_3.webp`,
+    L4: `${BASE}/symbols/low_4.webp`,
+    H1: `${BASE}/symbols/high_1.webp`,
+    H2: `${BASE}/symbols/high_2.webp`,
+    H3: `${BASE}/symbols/high_3.webp`,
+    H4: `${BASE}/symbols/high_4.webp`,
+    WILD: `${BASE}/symbols/wild.webp`,
+    CORE: `${BASE}/symbols/forge_core.webp`,
   },
   // shard multiplier value -> artwork (multiplier text is BAKED into the art)
   shards: {
-    2: `${BASE}/shards/shard_2x.png`,
-    4: `${BASE}/shards/shard_4x.png`,
-    8: `${BASE}/shards/shard_8x.png`,
-    16: `${BASE}/shards/shard_16x.png`,
-    32: `${BASE}/shards/shard_32x.png`,
-    64: `${BASE}/shards/shard_64x.png`,
+    2: `${BASE}/shards/shard_2x.webp`,
+    4: `${BASE}/shards/shard_4x.webp`,
+    8: `${BASE}/shards/shard_8x.webp`,
+    16: `${BASE}/shards/shard_16x.webp`,
+    32: `${BASE}/shards/shard_32x.webp`,
+    64: `${BASE}/shards/shard_64x.webp`,
   },
   powers: {
-    BLADE: `${BASE}/powers/blade.png`,
-    HAMMER: `${BASE}/powers/hammer.png`,
-    SHIELD: `${BASE}/powers/shield.png`,
+    BLADE: `${BASE}/powers/blade.webp`,
+    HAMMER: `${BASE}/powers/hammer.webp`,
+    SHIELD: `${BASE}/powers/shield.webp`,
   },
   // reusable procedural-composited FX sprites (loaded once, pooled at runtime)
   fx: {
-    WIN_RING: `${BASE}/fx/win_ring.png`, // normal win — behind the symbol
-    WIN_BURST: `${BASE}/fx/win_burst.png`, // normal win — on removal
-    ENERGY_SLASH: `${BASE}/fx/energy_slash.png`, // reserved for special presentation
-    ENERGY_ARC: `${BASE}/fx/energy_arc.png`, // reserved for special presentation
-    RUNE_BURST: `${BASE}/fx/rune_burst.png`, // reserved for special presentation
+    WIN_RING: `${BASE}/fx/win_ring.webp`, // normal win — behind the symbol
+    WIN_BURST: `${BASE}/fx/win_burst.webp`, // normal win — on removal
+    ENERGY_SLASH: `${BASE}/fx/energy_slash.webp`, // reserved for special presentation
+    ENERGY_ARC: `${BASE}/fx/energy_arc.webp`, // reserved for special presentation
+    RUNE_BURST: `${BASE}/fx/rune_burst.webp`, // reserved for special presentation
   },
   hud: {
     // ONE vertical meter component: HEAT (base) / MOLTEN CHARGE (bonus)
-    VMETER_FRAME: `${BASE}/hud/meter_vertical_frame.png`,
-    VMETER_FILL: `${BASE}/hud/meter_vertical_fill.png`,
-    CORES_PANEL: `${BASE}/hud/forge_cores_panel.png`,
-    SHARDS_PANEL: `${BASE}/hud/shards_panel.png`,
+    VMETER_FRAME: `${BASE}/hud/meter_vertical_frame.webp`,
+    VMETER_FILL: `${BASE}/hud/meter_vertical_fill.webp`,
+    CORES_PANEL: `${BASE}/hud/forge_cores_panel.webp`,
+    SHARDS_PANEL: `${BASE}/hud/shards_panel.webp`,
     PRESSURE: {
-      COLD: `${BASE}/hud/pressure_cold.png`,
-      WARM: `${BASE}/hud/pressure_warm.png`,
-      HOT: `${BASE}/hud/pressure_hot.png`,
-      OVERHEAT: `${BASE}/hud/pressure_overheat.png`,
-      CRITICAL: `${BASE}/hud/pressure_critical.png`,
+      COLD: `${BASE}/hud/pressure_cold.webp`,
+      WARM: `${BASE}/hud/pressure_warm.webp`,
+      HOT: `${BASE}/hud/pressure_hot.webp`,
+      OVERHEAT: `${BASE}/hud/pressure_overheat.webp`,
+      CRITICAL: `${BASE}/hud/pressure_critical.webp`,
     },
   },
   controls: {
     // approved forged plaque that IS the controls bar (2170×725; usable dark
     // interior ≈ inset 26% 8% 29% 8%)
-    BAR_FRAME: `${BASE}/controls/controls_bar_frame.png`,
-    SPIN: `${BASE}/controls/spin.png`,
-    MINUS: `${BASE}/controls/minus.png`,
-    PLUS: `${BASE}/controls/plus.png`,
-    BET: `${BASE}/controls/bet.png`,
-    AUTOPLAY: `${BASE}/controls/autoplay.png`,
-    TURBO: `${BASE}/controls/turbo.png`,
-    MENU: `${BASE}/controls/menu.png`,
-    SOUND: `${BASE}/controls/sound.png`,
-    FULLSCREEN: `${BASE}/controls/fullscreen.png`,
+    BAR_FRAME: `${BASE}/controls/controls_bar_frame.webp`,
+    SPIN: `${BASE}/controls/spin.webp`,
+    MINUS: `${BASE}/controls/minus.webp`,
+    PLUS: `${BASE}/controls/plus.webp`,
+    BET: `${BASE}/controls/bet.webp`,
+    AUTOPLAY: `${BASE}/controls/autoplay.webp`,
+    TURBO: `${BASE}/controls/turbo.webp`,
+    MENU: `${BASE}/controls/menu.webp`,
+    SOUND: `${BASE}/controls/sound.webp`,
+    FULLSCREEN: `${BASE}/controls/fullscreen.webp`,
   },
 };
 

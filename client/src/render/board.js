@@ -91,7 +91,7 @@ export class Board {
   }
 
   // The outermost machine casing is now the approved DOM sprite
-  // #board-outer-frame (board_outer_frame.png), scaled so its transparent
+  // #board-outer-frame (board_outer_frame.webp), scaled so its transparent
   // opening lands on the playable grid. The old procedural frame that lived in
   // the `frameInset` gutter is intentionally not drawn — the gutter sits behind
   // the casing art. Cell geometry (frameInset / cellSize) is UNCHANGED so

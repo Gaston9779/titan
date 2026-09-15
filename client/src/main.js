@@ -1,6 +1,6 @@
 import { Application } from "pixi.js";
 import { App } from "./app.js";
-import { loadGameAssets, warmGameAssets } from "./assets.js";
+import { loadGameAssets, warmGameAssets, onAssetsReady } from "./assets.js";
 import { initHelp } from "./help.js";
 import { shouldAutoContinue } from "./bonusFlow.js";
 
@@ -73,6 +73,10 @@ async function boot() {
     antialias: true,
     resolution: Math.min(2, window.devicePixelRatio || 1),
     autoDensity: true,
+    // Do not make a portfolio visitor pay to probe/download WebGPU and Canvas
+    // renderer paths. This game is a conventional 2D WebGL scene.
+    preference: "webgl",
+    powerPreference: "high-performance",
   });
 
   await loadGameAssets(); // bounded, failure-tolerant essential first paint
@@ -80,6 +84,11 @@ async function boot() {
 
   const app = new App(pixi);
   window.__forge = app;
+  // If the first-paint deadline won, replace any placeholder sprites with the
+  // late artwork without a reload or a second loader.
+  onAssetsReady(() => {
+    if (!app.playing && !app.bonusPending) app.showIdleBoard();
+  });
 
   // ---------- ONE gameplay-cluster layout ----------
   // The cluster is  LEFT HUD + gapLeft + BOARD + gapRight + RIGHT HUD.
@@ -180,15 +189,17 @@ async function boot() {
   app.showIdleBoard();
   const loading = $("loading");
   loading.classList.add("done");
-  setTimeout(() => loading.remove(), 500);
+  setTimeout(() => loading.remove(), 220);
 
-  // Start nonessential media only once interaction is possible. The background
-  // poster remains visible until the first decoded frame, so this never flashes.
-  const defer = window.requestIdleCallback || ((fn) => setTimeout(fn, 250));
-  defer(() => {
-    startBackgroundVideo("bg-video");
-    warmGameAssets().catch((error) => console.warn("Deferred asset warm-up failed", error));
-  });
+  // The poster is the initial background. The 5.7 MB loop is ambience, never
+  // a prerequisite for playing, so keep it off the critical network/decode
+  // path. FX are similarly warmed only after the first paint has settled.
+  const defer = window.requestIdleCallback || ((fn) => setTimeout(fn, 1500));
+  defer(() => warmGameAssets().catch((error) => console.warn("Deferred asset warm-up failed", error)));
+  const startAmbientBackground = () => startBackgroundVideo("bg-video");
+  window.addEventListener("pointerdown", startAmbientBackground, { once: true, passive: true });
+  window.addEventListener("keydown", startAmbientBackground, { once: true });
+  setTimeout(startAmbientBackground, 8000);
   const background = $("bg");
   new MutationObserver(() => {
     if (background.dataset.phase !== "base") startBackgroundVideo("bg-video-bonus");

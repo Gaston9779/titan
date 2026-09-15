@@ -107,6 +107,22 @@ export const CELL_BLEED = 1.01; // frame drawn slightly proud so seams disappear
 // --- loader + alpha-trim analysis -----------------------------------------
 // CACHE[id] = { texture, tw, th, cx, cy }  (trim size + visible-content centre, px)
 let CACHE = null;
+const readyListeners = new Set();
+
+// The board can paint with safe placeholders while a slow connection finishes
+// artwork. Consumers redraw their current state once the real textures land;
+// this keeps a flaky CDN or a cold mobile cache from holding the whole app
+// hostage behind a full-screen loader.
+export const onAssetsReady = (listener) => {
+  readyListeners.add(listener);
+  return () => readyListeners.delete(listener);
+};
+
+const notifyAssetsReady = () => {
+  for (const listener of readyListeners) {
+    try { listener(); } catch (error) { console.warn("Asset-ready listener failed", error); }
+  }
+};
 
 const pixiEntries = () => {
   const out = [];
@@ -127,7 +143,17 @@ const deferredEntries = () => pixiEntries().filter(([id]) => id.startsWith("powe
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function loadEntries(entries, { deadline = 5000 } = {}) {
+function cacheEntries(entries) {
+  for (const [id, source] of entries) {
+    // WHITE is an intentional safe visual fallback. It lets the game become
+    // interactive even during a transient asset/CDN failure.
+    const texture = Assets.get(url(source)) || Texture.WHITE;
+    const trim = id.startsWith("sym:") || id.startsWith("shard:") ? measureTrim(texture) : fullBounds(texture);
+    CACHE[id] = { texture, w: texWidth(texture), h: texHeight(texture), ...trim };
+  }
+}
+
+async function loadEntries(entries, { deadline = 1200, notifyWhenComplete = false } = {}) {
   const srcs = [...new Set(entries.map(([, s]) => url(s)))];
   // Load independently. A single corrupt/missing CDN object must never turn
   // into a permanently blocked game shell.
@@ -136,30 +162,35 @@ async function loadEntries(entries, { deadline = 5000 } = {}) {
     return null;
   }));
   const complete = Promise.allSettled(jobs);
+  let completeFinished = false;
+  // Do not abandon late downloads: replace placeholders and let the live board
+  // repaint as soon as every requested texture is available.
+  complete.then(() => {
+    completeFinished = true;
+    cacheEntries(entries);
+    if (notifyWhenComplete) notifyAssetsReady();
+  });
   const outcome = await Promise.race([complete.then(() => "complete"), sleep(deadline).then(() => "timeout")]);
-  if (outcome === "timeout") console.warn(`Asset warm-up exceeded ${deadline}ms; continuing with available textures.`);
-
-  for (const [id, source] of entries) {
-    // WHITE is an intentional safe visual fallback. It lets the game become
-    // interactive even during a transient asset/CDN failure; successful late
-    // loads are still cached by Pixi for the next board rebuild.
-    const texture = Assets.get(url(source)) || Texture.WHITE;
-    const trim = id.startsWith("sym:") || id.startsWith("shard:") ? measureTrim(texture) : fullBounds(texture);
-    CACHE[id] = { texture, w: texWidth(texture), h: texHeight(texture), ...trim };
-  }
+  if (outcome === "timeout") console.warn(`Asset warm-up exceeded ${deadline}ms; painting with available artwork.`);
+  // On timeout this creates the placeholder cache. If all requests won the
+  // race, the completion handler above already built the real cache once.
+  if (!completeFinished) cacheEntries(entries);
 }
 
 export async function loadGameAssets() {
   if (CACHE) return CACHE;
   CACHE = {};
-  await loadEntries(essentialEntries());
+  // A first paint has a strict budget. On a good connection this loads all
+  // board art; on a slow one it returns quickly with safe placeholders and
+  // upgrades in-place when the request completes.
+  await loadEntries(essentialEntries(), { deadline: 1200, notifyWhenComplete: true });
   return CACHE;
 }
 
 // Best-effort warm-up after the game is already usable. Nothing awaits this.
 export async function warmGameAssets() {
   if (!CACHE) await loadGameAssets();
-  await loadEntries(deferredEntries(), { deadline: 12000 });
+  await loadEntries(deferredEntries(), { deadline: 4000 });
   return CACHE;
 }
 

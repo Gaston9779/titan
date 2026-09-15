@@ -1043,7 +1043,7 @@ button:disabled { cursor: default; }
   display: grid; place-items: center;
   background: #05060a;
   font-family: var(--font); font-size: 22px; letter-spacing: 6px; color: var(--gold);
-  transition: opacity .4s;
+  transition: opacity .18s;
 }
 #loading.done { opacity: 0; pointer-events: none; }
 #loading.failed {
